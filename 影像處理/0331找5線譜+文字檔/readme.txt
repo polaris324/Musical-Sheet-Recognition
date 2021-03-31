@@ -1,0 +1,1 @@
+先執行findline 再執行five，就可以得到five.jpg
