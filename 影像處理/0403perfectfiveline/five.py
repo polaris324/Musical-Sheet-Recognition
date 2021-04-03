@@ -25,11 +25,17 @@ def five():
         x = x - 1
 
 
-    testx = lastx-10
+    testx = lastx
 
     listy = []
     for y in range(h-1):
-        if(img[y][testx] == 255):
+        if(img[y][testx] == 255 or
+            img[y][testx-1] == 255 or
+            img[y][testx-2] == 255 or
+            img[y][testx-3] == 255 or
+            img[y][testx+1] == 255 or
+            img[y][testx+2] == 255 or
+            img[y][testx+3] == 255):
             listy.append(y)
 
     #cv2.imshow("show", img)
