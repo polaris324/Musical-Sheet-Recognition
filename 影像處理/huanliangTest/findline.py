@@ -69,4 +69,4 @@ def findline(path):
     #cv2.imshow("imgmack2", imgmack2)
     #cv2.waitKey(0)
     #cv2.imwrite("imgmack2.jpg", imgmack2) # if output test img
-    return imgmack2
+    return thresh1, imgmack2
