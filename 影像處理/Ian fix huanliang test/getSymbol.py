@@ -26,11 +26,14 @@ def getSymbol(fiveline, thresh, staffRow, staffRow_spacing, lastx):
     for i in range(len(staffRow)):  #each row
         for j in range(lastx):          #search first line xaxis loc
             if(thresh[staffRow[i][0]][j] == 0 
-               and thresh[staffRow[i][0] + staffRow_spacing[i] + 1][j] == 0
-               and thresh[staffRow[i][0] + 2*staffRow_spacing[i] + 2][j] == 0
-               and thresh[staffRow[i][0] + 3*staffRow_spacing[i] + 3][j] == 0
-               and thresh[staffRow[i][0] + 4*staffRow_spacing[i] + 4][j] == 0):
-                #print(j)
+               and thresh[staffRow[i][0] + 1][j] == 255
+               and thresh[staffRow[i][1]][j] == 0
+               and thresh[staffRow[i][2]][j] == 0
+               and thresh[staffRow[i][3]][j] == 0
+               and thresh[staffRow[i][4]][j] == 0):
+                j=j+1   #get from next x-axis
+                print(j)
+                print("")
                 break;
         
         ##pre find symbol
