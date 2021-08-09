@@ -36,25 +36,13 @@ def getSymbol(fiveline, thresh, staffRow, staffRow_spacing, lastx):
                 #print("")
                 break;
         
-        '''
-        if(thresh[staffRow[i][0]][j] == 0 
-               and thresh[staffRow[i][0] + 1][j] == 255
-               and thresh[staffRow[i][0] + staffRow_spacing[i] + 1][j] == 0
-               and thresh[staffRow[i][0] + 2*staffRow_spacing[i] + 2][j] == 0
-               and thresh[staffRow[i][0] + 3*staffRow_spacing[i] + 3][j] == 0
-               and thresh[staffRow[i][0] + 4*staffRow_spacing[i] + 4][j] == 0):
-                print(j)
-                print("")
-                break;
-        '''
-        
         ##pre find symbol
         #save searchCmp(default 5 line look like)
         l = 0
         searchCmp = []
         top_y = staffRow[i][0] - 5 * staffRow_spacing[i] - 1      #first line
         bottom_y = staffRow[i][4] + 5 * staffRow_spacing[i] + 1   #last line
-        for k in range(top_y, bottom_y):
+        for k in range(top_y, bottom_y):    #把起點copy成一個default測資
             searchCmp.append(thresh[k][j])
             l += 1
         
@@ -63,41 +51,38 @@ def getSymbol(fiveline, thresh, staffRow, staffRow_spacing, lastx):
         #loop
         k = j
         while k < lastx:    #left to right
-            tmp=[]
-            tailCnt=0
-            tail=0
-            tailStart=0
+            tmp=[]      #目前x-asis的比較測資
+            tailCnt=0   #記錄音符尾巴連續
+            tail=0      #tmp pixer 的計數器
+            tailStart=0 #尾巴連續的起點
             
             #save a thresh tmp
-            for l in range(top_y,bottom_y):
-                tmp.append(thresh[l][k])
+            for l in range(top_y,bottom_y): #上+5綫到下+5綫
+                tmp.append(thresh[l][k])    #目前x-asix上+5綫到下+5綫pixer存入tmp
                 
                 if(thresh[l][k] == 0 and thresh[l+1][k] == 0):  #count node tail
                     tail+=1
-                    if(tail == 1):
+                    if(tail == 1):  #是尾巴頭
                         tailStart = l
-                    if(tail > tailCnt):
+                    if(tail > tailCnt): #尾巴連續
                         tailCnt = tail
                 else:
-                    tail=0
-            
-            #if(k == 406):
-                #print("node406", tailCnt, tailStart)
+                    tail=0        
             
             #comp
             if(flag == 0):  #find first xaxis change(each Symbol)
                 
-                if(searchCmp != tmp):
+                if(searchCmp != tmp):   #比較測資不同發生時，開始記錄
                     #print("flag")
-                    set_topx = k-5
-                    flag = 1
+                    set_topx = k-5      #設定索取x坐標起點
+                    flag = 1            #開始抓圖
                 
             if(flag):
                 if(searchCmp == tmp):   #find last xaxis change(end of symbol)
-                    set_endx = k+5
+                    set_endx = k+5      #設定索取x坐標終點
                     flag = 0
-                elif(tailCnt > (3 * staffRow_spacing[i])):
-                    if( tailCnt  != (4 * staffRow_spacing[i] + 4)):
+                elif(tailCnt > (3 * staffRow_spacing[i])):  #連續竪綫大於3閒
+                    if( tailCnt  != (4 * staffRow_spacing[i] + 4)): #連續竪綫非閒
                         set_topx = k - round(1.5 * staffRow_spacing[i])
                         k = k + 2 * staffRow_spacing[i]
                         set_endx = k
