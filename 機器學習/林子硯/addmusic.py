@@ -1,6 +1,9 @@
 import mido
+import numpy as np
 from os import listdir
+import tensorflow
 from mido import Message
+import cv2
 
 def addmusic(track, timeL, note):
     num = whichnote(note)
@@ -58,14 +61,33 @@ mid = mido.MidiFile()
 track = mido.MidiTrack()
 mid.tracks.append(track)
 note = 60
+
+resize_x = 64
+resize_y = 32
+x_test = [0]
+y_test = [0]
+
+model = tensorflow.keras.models.load_model("Save_Model_note")
+
+
+
 for imglist in range(len(folder_list)):
     x = folder_list[imglist]
-    note = 0#音高模型
-    timeL = 0#音長模型
+    print(x)
+
+    img_in = cv2.imread(path + "/" + x)
+    x_test[0] = cv2.resize(img_in, (resize_x, resize_y))
+
+    x_test = np.array(x_test)
+    x_Test = x_test.astype("float32") / 255.0
+    #print(x_Test)
+    note = np.argmax(model.predict(x_Test), axis=-1)#音高模型
+    print("prediction = ", note)
+    timeL = 600#音長模型
     #note = whichnote(num)  測試用
     #note = note + 2        測試用
     #timeL = 400            測試用
     addmusic(track, timeL, note)
-    print(x)
+
 
 mid.save("datamusic.mid")
