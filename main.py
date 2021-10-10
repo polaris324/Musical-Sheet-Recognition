@@ -4,6 +4,7 @@ from get_fiveline_rows import get_fiveline_rows
 from get_rows_dist import get_rows_dist
 from getSymbol import getSymbol
 from noteheight import noteheight
+from NotationByNN import noteLength
 import cv2
 import os
 
@@ -27,8 +28,8 @@ staffRow_spacing, line_spacing = get_rows_dist(staffRow)
 mapSymbol = getSymbol(fiveline, thresh, staffRow, staffRow_spacing, lastx)
 
 # In[Get Note High & Note Long]
-noteheight(mapSymbol)
+# noteheight(mapSymbol)
 # midi_inputList = getPredict(thresh, mapSymbol)
-
+noteLength(mapSymbol)
 # In[Create Music]
 # addMusic(midi_inputList)
