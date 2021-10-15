@@ -77,4 +77,5 @@ def noteheight(mapsymbol):
         #    print(mapsymbol[num][x], end='')
         #    print(" ", end='')
         #print("\n")
-    print(notelist)
+    #print(notelist)
+    return notelist
