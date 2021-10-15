@@ -43,4 +43,5 @@ def noteLength(mapSymbol):
         temp = temp.astype("float32") / 255.0
         length = np.argmax(model.predict(temp), axis=-1)
         notelist.append(int(length))
-    print(notelist)
+    # print(notelist)
+    return notelist

@@ -28,8 +28,8 @@ staffRow_spacing, line_spacing = get_rows_dist(staffRow)
 mapSymbol = getSymbol(fiveline, thresh, staffRow, staffRow_spacing, lastx)
 
 # In[Get Note High & Note Long]
-noteh = noteheight(mapSymbol)
+noteH = noteheight(mapSymbol)
 # midi_inputList = getPredict(thresh, mapSymbol)
-noteLength(mapSymbol)
+noteL = noteLength(mapSymbol)
 # In[Create Music]
 # addMusic(midi_inputList)
