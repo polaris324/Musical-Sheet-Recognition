@@ -29,7 +29,9 @@ mapSymbol = getSymbol(fiveline, thresh, staffRow, staffRow_spacing, lastx)
 
 # In[Get Note High & Note Long]
 noteH = noteheight(mapSymbol)
+print(len(noteH))
 # midi_inputList = getPredict(thresh, mapSymbol)
 noteL = noteLength(mapSymbol)
+print(len(noteL))
 # In[Create Music]
 # addMusic(midi_inputList)
