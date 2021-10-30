@@ -5,7 +5,7 @@ import tensorflow
 from mido import Message, MidiFile, MidiTrack
 import cv2
 
-beat = 400 #四分音符長度
+beat = 600 #四分音符長度
 
 def _changeBeat(beatNum):
     global beat
@@ -17,9 +17,9 @@ def howLong(Long): #設定音長值
     if(Long == 4):
         return beat
     elif(Long == 8):
-        return beat / 2
+        return int(beat / 2)
     elif(Long == 16):
-        return beat / 4
+        return int(beat / 4)
     elif(Long == 2):
         return beat * 2
     elif(Long == 1):
@@ -28,7 +28,13 @@ def howLong(Long): #設定音長值
         return 0
         
 
-def addmusic(track, timeL, noteArr):
+def addmusic(timeL, noteArr):
+    mid = MidiFile()
+
+    # Track
+    track = MidiTrack()
+    mid.tracks.append(track)
+
     #num = note%126     測試用
     for loop in range(len(noteArr)):
         if(noteArr[loop]<100): #有音符
@@ -37,25 +43,32 @@ def addmusic(track, timeL, noteArr):
             track.append(mido.Message("note_off", note=noteArr[loop], velocity=100, time=time, channel=1))
     
         elif(noteArr[loop] == 121): #4分休止符
+            time = beat
             track.append(mido.Message("note_on", note=60, velocity=0, time=0, channel=1))
             track.append(mido.Message("note_off", note=60, velocity=0, time=time, channel=1))
         elif (noteArr[loop] == 122): #8分休止符
+            time = int(beat/2)
             track.append(mido.Message("note_on", note=60, velocity=0, time=0, channel=1))
-            track.append(mido.Message("note_off", note=60, velocity=0, time=time/2, channel=1))
+            track.append(mido.Message("note_off", note=60, velocity=0, time=time, channel=1))
         elif (noteArr[loop] == 123): #全休止符
+            time = beat*4
             track.append(mido.Message("note_on", note=60, velocity=0, time=0, channel=1))
-            track.append(mido.Message("note_off", note=60, velocity=0, time=time*4, channel=1))
+            track.append(mido.Message("note_off", note=60, velocity=0, time=time, channel=1))
 
-mid = MidiFile()
+    mid.save("datamusic.mid")
 
-#Track
-track = MidiTrack()
-mid.tracks.append(track)
+def add(track, timeL, noteArr):
 
-# Array input here
-notelist_H = [60, 62, 64, 65, 67, 120]
-notelist_L = [16, 8, 4, 0, 4, 0] 
+    mid = MidiFile()
 
-addmusic(track, notelist_L, notelist_H)
+    #Track
+    track = MidiTrack()
+    mid.tracks.append(track)
 
-mid.save("datamusic.mid")
+    # Array input here
+    notelist_H = [60, 62, 64, 65, 67, 120]
+    notelist_L = [16, 8, 4, 0, 4, 0]
+
+    addmusic(track, notelist_L, notelist_H)
+
+    mid.save("datamusic.mid")

@@ -5,6 +5,7 @@ from get_rows_dist import get_rows_dist
 from getSymbol import getSymbol
 from noteheight import noteheight
 from NotationByNN import noteLength
+from addmusic import addmusic
 import cv2
 import os
 
@@ -34,4 +35,4 @@ print(len(noteH))
 noteL = noteLength(mapSymbol)
 print(len(noteL))
 # In[Create Music]
-# addMusic(midi_inputList)
+addmusic(noteL, noteH)
