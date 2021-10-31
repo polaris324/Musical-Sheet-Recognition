@@ -18,7 +18,7 @@ def whichnote(num, key):
         elif (num == 2):
             note = 59 #B
         elif (num == 3):
-            note = 60 #CSS
+            note = 60 #C
         elif (num == 4):
             note = 62 #D
         elif (num == 5):
