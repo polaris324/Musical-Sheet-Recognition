@@ -18,7 +18,7 @@ def whichnote(num, key):
         elif (num == 2):
             note = 59 #B
         elif (num == 3):
-            note = 60 #C
+            note = 60 #CSS
         elif (num == 4):
             note = 62 #D
         elif (num == 5):
@@ -62,6 +62,9 @@ def whichnote(num, key):
             note = 123 #全休止符
 
     # KEY selection
+    if(key == 'C'):
+        return note
+
     if(key == 'G'):     #G大調
         if(note == 65 or note == 77):
             note = note + 1
@@ -104,8 +107,8 @@ def noteheight(mapsymbol):
         x_Test = x_test.astype("float32") / 255.0
         num = np.argmax(model.predict(x_Test), axis=-1)# 音高模型
         #print(num)
-        #note = whichnote(num)
-        notelist.append(int(num))
+        note = whichnote(num, key)
+        notelist.append(int(note))
         """
         if(note<=86):
             notelist.append(note)
