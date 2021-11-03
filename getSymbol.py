@@ -246,6 +246,7 @@ def getSymbol(fiveline, threshMap, staffRow, staffRow_spacing, lastx):
         
     cv2.imshow("show", fiveline)
     cv2.waitKey(0)
+    cv2.destroyAllWindows()
     cv2.imwrite("test.jpg", fiveline)
     
     return mapNote

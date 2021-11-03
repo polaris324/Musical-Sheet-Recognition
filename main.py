@@ -11,7 +11,6 @@ import os
 
 # In[Read Image]
 filename = input()
-img = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
 
 # In[Image Preprocessing + Staff Detection]
 thresh, imgmark = findline(filename)

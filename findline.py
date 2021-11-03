@@ -2,11 +2,31 @@ import cv2
 import os
 import numpy as np
 
+thresholdSelect = 1 # 預設二值化為 1：Otsu's阈值处理， 2：固定阈值187
+thresholdRet = 187  # 固定阈值變數
+
+def _changeThersholdType(thresholdType, retNum):
+    global thresholdSelect
+    thresholdSelect = thresholdType
+
+def resizeW1024(img, h, w):
+    scale_percent = 1 - (w - 1024) / w
+    width = int(w * scale_percent)
+    height = int(h * scale_percent)
+    dim = (width, height)
+    
+    return cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+
 def findline(path):
 
     img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
     h, w = img.shape
-
+    
+    # Image Resize
+    if(w > 1024): # if image is too big, resize to regular size
+        # print("resize")
+        img = resizeW1024(img, h, w)
+    
     #  Noise Removal
     img = cv2.fastNlMeansDenoising(img, None, 10, 7, 21)
     
@@ -19,9 +39,14 @@ def findline(path):
     #imgmack2 = np.zeros([h, w, 3], dtype="uint8") # if need output test img
     
     #  Binarization
-    ret, thresh1 = cv2.threshold(img, 200, 255, cv2.THRESH_BINARY)
-    #cv2.imshow("show", thresh1)
-    #cv2.waitKey(0)
+    if (thresholdSelect == 1):      # Using Global binarization Otsu
+        ret, thresh1 = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+    elif (thresholdSelect == 2):    # Using Global binarization only thresh binary
+        ret, thresh1 = cv2.threshold(img, thresholdRet, 255, cv2.THRESH_BINARY)
+    elif (thresholdSelect == 3):
+        thresh1 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 25, 1)
+        
+    # cv2.imwrite("Binarizated Img", thresh1) # output binarizated result
     
     # if y,-5x~+5x (h.line) same set to white else black
     for y in range(h-1):
@@ -41,7 +66,8 @@ def findline(path):
                 
     #cv2.imshow("thresh", thresh1)
     #cv2.imshow("imgmack", imgmack)
-    #cv2.waitKey(0)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
     
     for y in range(h-1): #檢查是不是一線段
         for x in range(w-1):
