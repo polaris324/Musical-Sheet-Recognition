@@ -8,8 +8,9 @@ import cv2
 beat = 600 #四分音符長度
 
 def _changeBeat(beatNum):
-    global beat
-    beat = beatNum
+    if beatNum != '':
+        global beat
+        beat = int(beatNum)
 
 def howLong(Long): #設定音長值
     global beat
