@@ -19,7 +19,7 @@ from five import five
 from get_fiveline_rows import get_fiveline_rows
 from get_rows_dist import get_rows_dist
 from getSymbol import getSymbol
-from noteheight import noteheight
+import noteheight
 from NotationByNN import noteLength
 import addmusic
 
@@ -63,7 +63,8 @@ def main():
     staffRow_spacing, line_spacing = get_rows_dist(staffRow)
     
     mapSymbol = getSymbol(fiveline, thresh, staffRow, staffRow_spacing, lastx)
-    noteH = noteheight(mapSymbol)
+    noteheight._changeKey(keysValue.get()[0].upper())
+    noteH = noteheight.noteheight(mapSymbol)
     noteL = noteLength(mapSymbol)
     
     addmusic._changeBeat(tempo.get())
@@ -130,7 +131,7 @@ def getKeysValue(event):
     w = event.widget
     if isinstance(w, tk.Entry):
         print (w.get())
-        keysText.set('Keys : ' + keysValue.get())
+        keysText.set('Keys : ' + keysValue.get()[0].upper())
     global haveImage
     if haveImage:
         print(haveImage)

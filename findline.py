@@ -2,7 +2,7 @@ import cv2
 import os
 import numpy as np
 
-thresholdSelect = 1 # 預設二值化為 1：Otsu's阈值处理， 2：固定阈值187
+thresholdSelect = " OTSU" # 預設二值化為 1：Otsu's阈值处理， 2：固定阈值187
 thresholdRet = 187  # 固定阈值變數
 
 def _changeThersholdType(thresholdType, retNum):
