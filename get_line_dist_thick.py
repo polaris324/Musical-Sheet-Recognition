@@ -12,7 +12,7 @@ def get_line_dist_thick(img1, lastx):
     run_count = 0  # (相同值的连续累積數)
     run_type = img1[0, lastx-1]  # 255/0
     for j in range(row):   #in height
-        if (img1[j, lastx-1] == run_type):  #连续累積相同
+        if (img1[j, lastx-1] == run_type):  
             run_count += 1
         else:                               #連續中斷
             col.append(run_count)

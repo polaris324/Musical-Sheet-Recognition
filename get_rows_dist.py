@@ -1,4 +1,3 @@
-
 import numpy as np
 
 def get_rows_dist(staffRow):

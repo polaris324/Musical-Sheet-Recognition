@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue May 11 00:23:01 2021
-
-@author: 易昶辰
-"""
 import cv2
 import numpy as np
 import tensorflow
