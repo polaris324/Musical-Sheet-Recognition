@@ -5,8 +5,9 @@ import numpy as np
 key = 'C' # key of staff
 
 def _changeKey(Chord):
-    global key
-    key = Chord
+    if Chord != '':
+        global key
+        key = Chord
 
 def whichnote(num, key):
     note = 60

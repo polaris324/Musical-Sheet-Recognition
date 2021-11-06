@@ -41,12 +41,13 @@ def findline(path):
     #imgmack2 = np.zeros([h, w, 3], dtype="uint8") # if need output test img
     
     #  Binarization
-    if (thresholdSelect == " OTSU"):      # Using Global binarization Otsu
-        ret, thresh1 = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-    elif (thresholdSelect == " Customize"):    # Using Global binarization only thresh binary
+    # if (thresholdSelect == " OTSU"):      # Using Global binarization Otsu
+    if (thresholdSelect == " Customize"):    # Using Global binarization only thresh binary
         ret, thresh1 = cv2.threshold(img, thresholdRet, 255, cv2.THRESH_BINARY)
     elif (thresholdSelect == " YEN"):
         thresh1 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 25, 1)
+    else:
+        ret, thresh1 = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
         
     # cv2.imwrite("Binarizated Img", thresh1) # output binarizated result
     

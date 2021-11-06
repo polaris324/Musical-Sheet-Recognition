@@ -63,7 +63,10 @@ def main():
     staffRow_spacing, line_spacing = get_rows_dist(staffRow)
     
     mapSymbol = getSymbol(fiveline, thresh, staffRow, staffRow_spacing, lastx)
-    noteheight._changeKey(keysValue.get()[0].upper())
+    try:
+        noteheight._changeKey(keysValue.get()[0].upper())
+    except IndexError:
+        noteheight._changeKey('C')
     noteH = noteheight.noteheight(mapSymbol)
     noteL = noteLength(mapSymbol)
     
