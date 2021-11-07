@@ -5,7 +5,6 @@ Created on Wed Jun 16 15:32:54 2021
 @author: 易昶辰
 
 """
-
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox
@@ -22,7 +21,7 @@ from getSymbol import getSymbol
 import noteheight
 from NotationByNN import noteLength
 import addmusic
-
+mapSymbol = 0
 def drop(event):
     var.set(event.data)
 
@@ -50,30 +49,75 @@ def Upload():
     print(path)
     showImage(path)
 
-def main():
-    global filelocation,keys,tempo
+def mainA():
     statusText.set('Status : Running')
     filename = testText
     
+    statusText.set('Status : Running - preprocessing')
+    reload()
     findline._changeThersholdType(threshold.get(), thValue)
     thresh, imgmark = findline.findline(filename)
+    
+    statusText.set('Status : Running - line distance & thickness')
+    reload()
     fiveline, lastx = five(imgmark)
     
+    statusText.set('Status : Running - getting Symbol mapping')
+    reload()
     staffRow = get_fiveline_rows(fiveline, lastx)
     staffRow_spacing, line_spacing = get_rows_dist(staffRow)
     
+    global mapSymbol
     mapSymbol = getSymbol(fiveline, thresh, staffRow, staffRow_spacing, lastx)
+    showThImage()
     try:
         noteheight._changeKey(keysValue.get()[0].upper())
     except IndexError:
         noteheight._changeKey('C')
+    showImage(testText)
+    statusText.set('Status : Running - preprocessing done')
+    
+    # statusText.set('Status : Running - CNN')
+    # reload()
+    # noteH = noteheight.noteheight(mapSymbol)
+    # noteL = noteLength(mapSymbol)
+    
+    # statusText.set('Status : Running - creating Music')
+    # reload()
+    # addmusic._changeBeat(tempo.get())
+    # addmusic.addmusic(noteL, noteH)
+    # statusText.set('Status : Done')
+    
+def mainB():
+    global mapSymbol
+    
+    statusText.set('Status : Running - CNN')
+    reload()
     noteH = noteheight.noteheight(mapSymbol)
     noteL = noteLength(mapSymbol)
     
+    statusText.set('Status : Running - creating Music')
+    reload()
     addmusic._changeBeat(tempo.get())
     addmusic.addmusic(noteL, noteH)
     statusText.set('Status : Done')
+        
+def reload():
+    ws.update()
     
+def showThImage():
+    image_width = Image.open("Binarizated Img.jpg").width
+    image_height = Image.open("Binarizated Img.jpg").height
+    if ( max(image_height, image_width) == image_height ):# vertical image
+        resize_height = 600
+        resize_width = 600/image_height*image_width
+    else:# horizon image
+        resize_height = 450/image_width*image_height
+        resize_width = 450
+    image_file = ImageTk.PhotoImage(Image.open("Binarizated Img.jpg").resize((int(resize_width)+20, int(resize_height)+20)))
+    
+    canvas_2.image = image_file
+    canvas_2.create_image(225,300,anchor='center',image = image_file)
 
 def showImage(file_location):    
     image_width = Image.open(file_location).width
@@ -144,8 +188,8 @@ def getKeysValue(event):
 
 # Initial window setting
 ws = tkd.Tk()
-ws.title("ProjectGUI")
-ws.geometry("1115x750")
+ws.title("Musical-Sheet-Recognition")
+ws.geometry("1600x750")
 #ws.iconbitmap("Downloads\icon.ico")
 ws.config(bg="lightgray")
 
@@ -212,7 +256,7 @@ thresholdTypeCombo = ttk.Combobox(ws, value = values, textvariable=threshold)
 thresholdTypeCombo.bind("<<ComboboxSelected>>", showThresholdValueBySelect)
 thresholdTypeCombo.grid(column=4, row=3, columnspan=3, sticky='WES')
 thValue = tk.StringVar()
-thresholdValue = tk.Scale(ws, from_=0, to=255,orient='horizonta' ,tickinterval=50,length=200)
+thresholdValue = tk.Scale(ws, from_=1, to=254,orient='horizonta' ,tickinterval=50,length=200)
 thresholdValue.grid(column=4, row=5, rowspan=3, columnspan=3, padx=10, pady=5)
 thresholdValue.bind("<ButtonRelease>", getScaleValue)
 thresholdValue.grid_remove()
@@ -229,9 +273,10 @@ keysEntry.grid(column=4, row=9, pady=10, columnspan=3,sticky='NWE')
 # Submit
 statusText = tk.StringVar()
 statusText.set('Status :')
-tk.Label(ws, textvariable=statusText, bg="lightgray").grid(column=4, row=14, columnspan=3, sticky=tk.W)
-filelocation = tk.StringVar()
-Run = tk.Button(ws, text='RUN', command=main)
+tk.Label(ws, textvariable=statusText, bg="lightgray").grid(column=4, row=13, columnspan=3, sticky=tk.W)
+Confirm = tk.Button(ws, text='Confirm', command=mainA)
+Confirm.grid(column=4, row=14, columnspan=3, padx=10, pady=5,sticky = 'we')
+Run = tk.Button(ws, text='RUN', command=mainB)
 Run.grid(column=4, row=15, columnspan=3, padx=10, pady=5,sticky = 'we')
 
 # Music player
@@ -239,21 +284,32 @@ pygame.mixer.init()
 def play():
     pygame.mixer.music.load("datamusic.mid")
     pygame.mixer.music.play()
-        
+
 def pause():
     pygame.mixer.music.pause()
 
 def stop():
     pygame.mixer.music.stop()
-    #ws.destroy()
+
+def ex():
+    pygame.mixer.music.stop()
+    ws.destroy()
 
 Play = tk.Button(ws, text = 'Play', command = play).grid(column=4, row=16, padx=10, pady=5, sticky='swe')
-Pause = tk.Button(ws,text = 'Pause', command = pause).grid(column=5, row=16, padx=10, pady=5, sticky='swe')
+# Pause = tk.Button(ws,text = 'Pause', command = pause).grid(column=5, row=16, padx=10, pady=5, sticky='swe')
 Stop = tk.Button(ws, text="Stop", command=stop).grid(column=6, row=16, padx=10, pady=5, sticky='swe')
 
+#Threshold Image
+thImg = tk.Frame(ws)
+canvas_2 = tk.Canvas(thImg, width=450, height=600)
+canvas_2.grid(row=0, column=0, sticky=tk.N+tk.S+tk.E+tk.W)
+
+thImg.grid(column=8, row=1, columnspan=3, rowspan=16)
+
+
 #Exit Button
-quit_buttom = tk.Button(ws, text="Exit Program", command=ws.destroy)
-quit_buttom.grid(column=7, row=17, padx=10, pady=5)
+quit_buttom = tk.Button(ws, text="Exit Program", command=ex)
+quit_buttom.grid(column=11, row=17, padx=10, pady=5)
 
 #-----------------------------------------------------------------------------------------------
 # Progress bar widget
