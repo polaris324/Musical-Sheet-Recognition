@@ -49,7 +49,7 @@ def findline(path):
     else:
         ret, thresh1 = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
         
-    # cv2.imwrite("Binarizated Img", thresh1) # output binarizated result
+    cv2.imwrite("Binarizated Img.jpg", thresh1) # output binarizated result
     
     # if y,-5x~+5x (h.line) same set to white else black
     for y in range(h-1):
