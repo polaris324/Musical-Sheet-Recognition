@@ -10,10 +10,12 @@ import tkinter.ttk as ttk
 import tkinter.messagebox
 from tkinter import filedialog
 from PIL import Image, ImageTk
+import cv2
 import pygame
 import tkinterdnd2 as tkd # https://pythonguides.com/python-tkinter-drag-and-drop/ pip install tkinterdnd2
 
-import findline
+from findline import findline
+from pre_processing import preprocessing, _changeThersholdType
 from five import five
 from get_fiveline_rows import get_fiveline_rows
 from get_rows_dist import get_rows_dist
@@ -52,14 +54,17 @@ def Upload():
 def mainA():
     statusText.set('Status : Running')
     filename = testText
+    img = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
+    h, w = img.shape  # Image Length & Width
     
     statusText.set('Status : Running - preprocessing')
     reload()
-    findline._changeThersholdType(threshold.get(), thValue)
-    thresh, imgmark = findline.findline(filename)
+    _changeThersholdType(threshold.get(), thValue)
+    thresh, h, w = preprocessing(img, h, w)
     
     statusText.set('Status : Running - line distance & thickness')
     reload()
+    imgmark = findline(thresh, h, w)
     fiveline, lastx = five(imgmark)
     
     statusText.set('Status : Running - getting Symbol mapping')

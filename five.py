@@ -63,5 +63,5 @@ def five(img):
             intx = intx + 1
         i += 1
 
-    cv2.imwrite("five.jpg", five) # if output test img
+    cv2.imwrite("Binarizated Img.jpg", five) # if output test img
     return five, lastx
