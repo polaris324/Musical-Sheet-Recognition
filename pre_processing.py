@@ -51,5 +51,5 @@ def preprocessing(img, h, w):
         ret, thresh = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
     
     # thresh = result of the preprocessing
-    # cv2.imwrite("Preprocessing_Img.jpg", thresh) # output binarizated result
+    cv2.imwrite("Preprocessing_Img.jpg", thresh) # output binarizated result
     return thresh, h, w
