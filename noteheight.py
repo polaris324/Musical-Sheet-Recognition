@@ -2,7 +2,7 @@ import cv2
 import tensorflow
 import numpy as np
 
-key = 'C' # key of staff
+key = 'D' # key of staff
 
 def _changeKey(Chord):
     if Chord != '':
@@ -97,6 +97,7 @@ def noteheight(mapsymbol):
     notelist = []
     model = tensorflow.keras.models.load_model("Save_Model_note")
     img = cv2.imread("test.jpg")
+    
     for num in range(len(mapsymbol)):
 
         y1, y2, x1, x2 = mapsymbol[num]

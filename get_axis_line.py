@@ -4,16 +4,16 @@
 import cv2
 import numpy as np
 from scipy import stats
-from getSymbol import getSymbol
-import time
+# from getSymbol import getSymbol
+# import time
 
-"""test header
-from pre_processing import preprocessing
-img = cv2.imread('3.png', cv2.IMREAD_GRAYSCALE)
-h, w = img.shape  # Image Length & Width
+"""test header"""
+# from pre_processing import preprocessing
+# img = cv2.imread('21-1.jpg', cv2.IMREAD_GRAYSCALE)
+# h, w = img.shape  # Image Length & Width
 
-thresh, h, w = preprocessing(img, h, w)
-"""
+# thresh, h, w = preprocessing(img, h, w)
+
 
 def findstaff_spacing(thresh, h, w):
     
@@ -25,7 +25,7 @@ def findstaff_spacing(thresh, h, w):
     distCnt = 0 # counter for each spacing
     
     for row in range(h):    # if match staffline, get axis
-        if numAryOfBlack[row] > threshOfLine:
+        if numAryOfBlack[row] > threshOfLine and distCnt != 0:
             lineAxis.append([row, distCnt])
             distCnt = 0
         else:
@@ -34,45 +34,69 @@ def findstaff_spacing(thresh, h, w):
     
     lineCnt = 0
     flag_findfive = 0
+    # Exception_staffLine = 0
     lineRow = []
     staffRow = []
     
     for row in range(len(lineAxis)):
         if(flag_findfive):
-            if((lineAxis[row][1] - spacing) >= 0):
+            if(    (lineAxis[row][1] - spacing) >= -1 
+               and (lineAxis[row][1] - spacing) <=  2): # is staffline, spacing is +-1
                 lineRow.append(lineAxis[row][0])
                 lineCnt += 1
-            else:
+                # print("found staff line", lineRow)
+            elif(lineAxis[row][1] == 0):                # is overlapping, pop last & add new staffline
                 lineRow.pop(lineCnt)
                 lineRow.append(lineAxis[row][0])
+                # print("found overlapping", lineRow)
+            # elif(lineCnt != 0):
+                # Exception_staffLine = 1
     
-            if(lineCnt == 4):
+            if(lineCnt == 4):                           # if found five staffline, then add to one group
                 staffRow.append(lineRow)
                 lineRow = []
                 lineCnt = 0
                 flag_findfive = 0
-        else:
+        else:                                           # catch flag if first staffline for each group
             flag_findfive = 1
             lineRow.append(lineAxis[row][0])
             
-          
+    imgmask = np.zeros([h, w], dtype="uint8")   # comfirm staffline generate
+    lastX = w
     
-    imgmask = np.zeros([h, w], dtype="uint8")
-    lastX = 0
+    # if raise exception, need to return a callout value
+    
+    # output gen comfirm staffline
     
     for each in range(len(staffRow)):
         for row in range(5):
+            lastCheck_flag = 1
             for col in range(w-1,0,-1):
                 if thresh[staffRow[each][row]][col] == 0:
                     imgmask[staffRow[each][row]][col] = 255
-                    if(col > lastX):
-                        lastX = col
                     
-    # getSymbol(imgmask, thresh, staff_row2, staffRow_spacing, lastX)
+                    if(row == 4 and lastCheck_flag and col <= lastX and
+                       thresh[staffRow[each][row]-1][col-1] == 255):
+                        # print(staffRow[each][row], col)
+                        lastX = col
+                        lastCheck_flag = 0
+                    
+    # check monophony or not
+    monophony = 0
+    for row in range(staffRow[0][4], staffRow[1][0] + spacing, 1):
+        if(thresh[row][lastX+1] == 0):
+            monophony = 1
+        else:
+            monophony = 0
+            break
     
     cv2.imwrite("imgmask.jpg", imgmask) # if output test img
     
-    return imgmask, staffRow, spacing, lastX
+    # if raise exception, need to return a callout value
+    return imgmask, staffRow, spacing, lastX, monophony , #lineAxis
+
+"""test main"""
+# imgmask, staffRow, spacing, lastX, mono, Arr = findstaff_spacing(thresh, h, w)
 
 # "exec_time set"
 # exec_time = []

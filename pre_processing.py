@@ -11,8 +11,8 @@ import numpy as np
 from skimage.filters import threshold_yen
 
 """Global variable"""
-thresholdSelect = ' OSTU'   # 預設二值化為 (Otsu自適應 \ 固定阈值 \ Ken)
-thresholdRet    = 200       # 固定阈值變數
+thresholdSelect = ' Otsu'   # 預設二值化為 (Otsu自適應 \ Customize \ Ken)
+thresholdRet    = 200      # 固定阈值變數
 
 def _changeThersholdType(thresholdType, retNum):
     global thresholdSelect
@@ -48,7 +48,8 @@ def preprocessing(img, h, w):
         binary_niblack = imgNR >= binary
         thresh = binary_niblack * np.uint8(255)
     else:                                   # Using Global binarization with OTSU
-        ret, thresh = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+        ret, thresh = cv2.threshold(imgNR, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+        print(ret)
     
     # thresh = result of the preprocessing
     cv2.imwrite("Preprocessing_Img.jpg", thresh) # output binarizated result

@@ -5,7 +5,7 @@ import tensorflow
 from mido import Message, MidiFile, MidiTrack
 import cv2
 
-beat = 600 #四分音符長度
+beat = 800 #四分音符長度
 
 def _changeBeat(beatNum):
     if beatNum != '':
