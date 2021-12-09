@@ -2,12 +2,11 @@ import cv2
 import tensorflow
 import numpy as np
 
-key = 'D' # key of staff
+key = 'C' # key of staff
 
 def _changeKey(Chord):
-    if Chord != '':
-        global key
-        key = Chord
+    global key
+    key = Chord
 
 def whichnote(num, key):
     note = 60
@@ -61,32 +60,43 @@ def whichnote(num, key):
             note = 122 #8分休止符
         elif (num == 23):
             note = 123 #全休止符
+        elif (num == 25):
+            note = 100 #升記號
 
     # KEY selection
-    if(key == 'C'):
+    if(key == 'C' or key== 'a'):
         return note
 
-    if(key == 'G'):     #G大調
+    if(key == 'G' or key== 'e'):     #G大調
         if(note == 65 or note == 77):
             note = note + 1
-    elif(key == 'D'):   #D大調
+    elif(key == 'D' or key== 'b'):   #D大調
         if(note == 65 or note == 77 or note == 60 or note == 72 or note == 84):
             note = note + 1
-    elif(key == 'D'):   #A大調
+    elif(key == 'A' or key== '#f'):   #A大調
         if(note == 65 or note == 77 or note == 60 or note == 72 or note == 84 or note == 55 or note == 67 or note == 79):
             note = note + 1
-    elif(key == 'E'):   #E大調
+    elif(key == 'E' or key== '#c'):   #E大調
         if (note == 65 or note == 77 or note == 60 or note == 72 or note == 84 or note == 55 or note == 67 or note == 79 or note == 62 or note == 74 or note == 86):
             note = note + 1
-    elif(key == 'B'):   #B大調
+    elif(key == 'B' or key== '#g'):   #B大調
         if (note == 65 or note == 77 or note == 60 or note == 72 or note == 84 or note == 55 or note == 67 or note == 79 or note == 62 or note == 74 or note == 86 or note == 57 or note == 69 or note == 81):
             note = note + 1
-    elif(key == 'F'):   #F大調
+    elif(key == '#F' or key== 'd'):   #F大調
         if (note == 65 or note == 77 or note == 60 or note == 72 or note == 84 or note == 55 or note == 67 or note == 79 or note == 62 or note == 74 or note == 86 or note == 57 or note == 69 or note == 81 or note == 64 or note == 76):
             note = note + 1
-    elif(key == 'D'):   #升C大調
+    elif(key == '#C' or key== '#a'):   #升C大調
         if(note < 100):
             note = note + 1
+    elif(key == 'F'):
+        if(note == 59 or note == 71 or note == 83):
+            note = note - 1
+    elif(key == 'B'):
+        if(note == 59 or note == 71 or note == 83 or note == 64 or note == 76):
+            note = note - 1
+    elif(key == ''):
+        if(note == 59 or note == 71 or note == 83 or note == 64 or note == 76):
+            note = note - 1
 
     return note
 
@@ -97,7 +107,6 @@ def noteheight(mapsymbol):
     notelist = []
     model = tensorflow.keras.models.load_model("Save_Model_note")
     img = cv2.imread("test.jpg")
-    
     for num in range(len(mapsymbol)):
 
         y1, y2, x1, x2 = mapsymbol[num]
