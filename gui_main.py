@@ -22,6 +22,8 @@ import noteheight
 from NotationByNN import noteLength
 import addmusic
 mapSymbol = 0
+MadeNoteHeight = 0
+MadeNteLength = 0
 def drop(event):
     var.set(event.data)
 
@@ -56,7 +58,7 @@ def showImage(file_location):
     global haveImage
     haveImage = True
     statusText.set("狀態 : 圖片已載入")
-
+    
 def mainA():
     statusText.set("狀態 : 執行中...")
     filename = testText
@@ -79,6 +81,7 @@ def mainA():
     # staffRow_spacing, line_spacing = get_rows_dist(staffRow)
     
     global mapSymbol
+    mapSymbol = 0
     mapSymbol = getSymbol(imgmask, thresh, staffRow, spacing, lastX, mono)
     showThImage("test.jpg")
     try:
@@ -106,11 +109,20 @@ def mainB():
     reload()
     noteH = noteheight.noteheight(mapSymbol)
     noteL = noteLength(mapSymbol)
+    global MadeNoteHeight,MadeNteLength
+    MadeNoteHeight = noteH
+    MadeNteLength = noteL
     
     statusText.set("狀態 : 音樂生成中...")
     reload()
     addmusic._changeBeat(tempo.get())
     addmusic.addmusic(noteL, noteH)
+    statusText.set("狀態 : 音樂生成完畢")
+def createMusic():    
+    statusText.set("狀態 : 音樂生成中...")
+    reload()
+    addmusic._changeBeat(tempo.get())
+    addmusic.addmusic(MadeNteLength, MadeNoteHeight)
     statusText.set("狀態 : 音樂生成完畢")
         
 def reload():
@@ -176,25 +188,28 @@ def showThresholdValueBySelect(event):
          statusText.set("狀態 : 參數已變更(二值化方法 : "+ threshold.get() + " )")
      else:
         statusText.set("狀態 : 參數已變更[請輸入圖片]")
-     import time
-     reload()
-     time.sleep(1.5)
-     statusText.set("狀態 : 二值化執行中...")
-     filename = testText
-    
-     reload()
-     img = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
-     h, w = img.shape  # Image Length & Width
-     _changeThersholdType(threshold.get(), thValue)
-     thresh, h, w = preprocessing(img, h, w)
-    
-     reload()
-     imgmask, staffRow, spacing, lastX, mono = findstaff_spacing(thresh, h, w)
-    #  fiveline, lastx = five(imgmark)
-     
-     showThImage("imgmask.jpg")
-     statusText.set("狀態 : 二值化完成")
-    
+        return
+     if threshold.get() != " 自定義閥值":
+         import time
+         reload()
+         time.sleep(0.5)
+         statusText.set("狀態 : 二值化執行中...")
+         filename = testText
+        
+         reload()
+         img = cv2.imread(filename, cv2.IMREAD_GRAYSCALE)
+         h, w = img.shape  # Image Length & Width
+         _changeThersholdType(threshold.get(), thValue)
+         thresh, h, w = preprocessing(img, h, w)
+        
+         reload()
+         imgmask, staffRow, spacing, lastX, mono = findstaff_spacing(thresh, h, w)
+        #  fiveline, lastx = five(imgmark)
+         
+         showThImage("imgmask.jpg")
+         statusText.set("狀態 : 二值化完成")
+         return
+     statusText.set("狀態 : 請接續輸入閥值")
 
 def getScaleValue(event):
     w = event.widget
@@ -208,9 +223,10 @@ def getScaleValue(event):
         statusText.set("狀態 : 參數已變更\n(二值化-自定義方法之參數 : "+ (str(thValue)) + " )")
     else:
         statusText.set("狀態 : 參數已變更[請輸入圖片]")
+        return
     import time
     reload()
-    time.sleep(1.5)
+    time.sleep(0.5)
     statusText.set("狀態 : 二值化執行中...")
     filename = testText
     
@@ -255,9 +271,17 @@ frame = tk.Frame(ws)
 canvas = tk.Canvas(frame, width=450, height=600)
 canvas.grid(row=0, column=0, sticky=tk.N+tk.S+tk.E+tk.W)
 
-frame.grid(column=1, row=1, columnspan=3, rowspan=16)
-tk.Label(ws, text="輸入圖像", bg="lightgray").grid(column=1, row=17, columnspan=3)
+frame.grid(column=1, row=1, columnspan=3, rowspan=20)
+tk.Label(ws, text="輸入圖像", bg="lightgray").grid(column=1, row=21, columnspan=3)
 
+#Threshold Image
+thImg = tk.Frame(ws)
+canvas_2 = tk.Canvas(thImg, width=450, height=600)
+canvas_2.grid(row=0, column=0, sticky=tk.N+tk.S+tk.E+tk.W)
+
+thImg.grid(column=9, row=1, columnspan=3, rowspan=20)
+tk.Label(ws, text="預處理結果", bg="lightgray").grid(column=9, row=21, columnspan=3)
+tk.Label(ws, bg="lightgray").grid(column=8, row=0, padx = 10) # for padding
 # Drag and drop setting
 var = tk.StringVar()
 var.set("請拖拉文件至此")
@@ -277,10 +301,33 @@ btn_upload = tk.Button(ws, text="選擇文件", command=Upload)
 btn_upload.grid(column=3, row=0, padx=10, pady=5)
 haveImage = False
 
+# Bar for threshold
+thresholdTypeText = tk.StringVar()
+thresholdTypeText.set("二值化方法 :")
+tk.Label(ws, textvariable=thresholdTypeText, bg="lightgray").grid(column=4, row=1, columnspan=3,sticky=tk.W)
+values=[" OTSU",
+        " 自定義閥值",
+        " YEN"]
+threshold = tk.StringVar()
+thresholdTypeCombo = ttk.Combobox(ws, value = values, textvariable=threshold)
+thresholdTypeCombo.bind("<<ComboboxSelected>>", showThresholdValueBySelect)
+thresholdTypeCombo.grid(column=4, row=2, columnspan=3, sticky='WES')
+thValue = tk.StringVar()
+thresholdValue = tk.Scale(ws, from_=1, to=254,orient='horizonta' ,tickinterval=50,length=200)
+thresholdValue.grid(column=4, row=3, rowspan=6, columnspan=3, padx=10, pady=5)
+thresholdValue.bind("<ButtonRelease>", getScaleValue)
+thresholdValue.grid_remove()
+
+# Submit Threshold type
+Confirm = tk.Button(ws, text="進行音符擷取", command=mainA)
+Confirm.grid(column=4, row=9, columnspan=3, padx=10, pady=5,sticky = 'wsen')
+
 #DirectEnter/SelectBox for Speed Selection
+
 tempoText = tk.StringVar()
-tempoText.set("MIDI節拍單位 :")     
-tk.Label(ws, textvariable=tempoText,bg="lightgray", anchor=tk.W, width=32).grid(column=4, row=0, columnspan=3)
+tempoText.set("MIDI節拍單位 :")
+tk.Label(ws, bg="lightgray").grid(column=5, row=11, sticky="NS") # for padding
+tk.Label(ws, textvariable=tempoText,bg="lightgray", anchor=tk.W, width=32).grid(column=4, row=12, columnspan=3)
 '''
 values=["Larghissimo -20",
         "Grave 20-40",
@@ -298,45 +345,28 @@ values=["Larghissimo -20",
 # combo = ttk.Combobox(ws,values = values)
 #combo = ttk.Combobox(ws)
 tempo = tk.StringVar()
-tk.Entry(ws, textvariable = tempo).grid(column=4, row=1, pady=10, columnspan=3,sticky='NWE')
+tk.Entry(ws, textvariable = tempo).grid(column=4, row=13, pady=10, columnspan=2,sticky='WE')
 # combo.bind("<<ComboboxSelected>>", showTempoValueBySelect)
 #combo.grid(column=4, row=1, pady=10, columnspan=3,sticky='NWE')
-tk.Button(ws, text="設定", command=getTempoValue).grid(column=7, row=1, padx=10, pady=10, sticky=tk.N)
-
-# Bar for threshold
-thresholdTypeText = tk.StringVar()
-thresholdTypeText.set("二值化方法 :")
-tk.Label(ws, textvariable=thresholdTypeText, bg="lightgray").grid(column=4, row=2, columnspan=3, sticky=tk.W)
-values=[" OTSU",
-        " 自定義閥值",
-        " YEN"]
-threshold = tk.StringVar()
-thresholdTypeCombo = ttk.Combobox(ws, value = values, textvariable=threshold)
-thresholdTypeCombo.bind("<<ComboboxSelected>>", showThresholdValueBySelect)
-thresholdTypeCombo.grid(column=4, row=3, columnspan=3, sticky='WES')
-thValue = tk.StringVar()
-thresholdValue = tk.Scale(ws, from_=1, to=254,orient='horizonta' ,tickinterval=50,length=200)
-thresholdValue.grid(column=4, row=4, rowspan=4, columnspan=3, padx=10, pady=5)
-thresholdValue.bind("<ButtonRelease>", getScaleValue)
-thresholdValue.grid_remove()
+tk.Button(ws, text="設定", command=getTempoValue).grid(column=6, row=13, sticky='')
 
 # Keys
 keysText = tk.StringVar()
 keysText.set("調性 :")
-tk.Label(ws, textvariable=keysText, bg="lightgray").grid(column=4, row=8, columnspan=3, sticky=tk.W)
+tk.Label(ws, textvariable=keysText, bg="lightgray").grid(column=4, row=14, columnspan=3, sticky=tk.W)
 keysValue = tk.StringVar()
 keysEntry = tk.Entry(ws, textvariable = keysValue)
 keysEntry.bind("<KeyRelease>", getKeysValue)
-keysEntry.grid(column=4, row=9, pady=10, columnspan=3,sticky='NWE')
+keysEntry.grid(column=4, row=15, pady=10, columnspan=3,sticky='NWE')
 
 # Submit
+Run = tk.Button(ws, text="執行樂譜辨識及音樂生成", command=mainB)
+Run.grid(column=4, row=16, columnspan=3, padx=10, pady=5,sticky = 'NSWE')
+Music = tk.Button(ws, text="音樂生成", command=createMusic)
+Music.grid(column=4, row=17, columnspan=3, padx=10, pady=5,sticky = 'we')
 statusText = tk.StringVar()
 statusText.set("狀態 :")
-tk.Label(ws, textvariable=statusText, bg="lightgray").grid(column=4, row=10, columnspan=3, sticky=tk.W)
-Confirm = tk.Button(ws, text="進行音符擷取", command=mainA)
-Confirm.grid(column=4, row=11, columnspan=3, padx=10, pady=5,sticky = 'we')
-Run = tk.Button(ws, text="執行樂譜辨識", command=mainB)
-Run.grid(column=4, row=12, columnspan=3, padx=10, pady=5,sticky = 'we')
+tk.Label(ws, textvariable=statusText, bg="lightgray").grid(column=4, row=18, columnspan=3, sticky=tk.W)
 
 # Music player
 pygame.mixer.init()
@@ -354,23 +384,14 @@ def ex():
     pygame.mixer.music.stop()
     ws.destroy()
 
-tk.Label(ws, text="播放控制 :", bg="lightgray").grid(column=4, row=15, columnspan=3, sticky=tk.W)
-Play = tk.Button(ws, text = "播放", command = play).grid(column=4, row=16, padx=10, pady=5, sticky='swe')
+tk.Label(ws, text="播放控制 :", bg="lightgray").grid(column=4, row=19, columnspan=3, sticky=tk.W)
+Play = tk.Button(ws, text = "播放", command = play).grid(column=4, row=20, padx=10, pady=5, sticky='swen')
 # Pause = tk.Button(ws,text = 'Pause', command = pause).grid(column=5, row=16, padx=10, pady=5, sticky='swe')
-Stop = tk.Button(ws, text="停止", command=stop).grid(column=6, row=16, padx=10, pady=5, sticky='swe')
-
-#Threshold Image
-thImg = tk.Frame(ws)
-canvas_2 = tk.Canvas(thImg, width=450, height=600)
-canvas_2.grid(row=0, column=0, sticky=tk.N+tk.S+tk.E+tk.W)
-
-thImg.grid(column=8, row=1, columnspan=3, rowspan=16)
-tk.Label(ws, text="預處理結果", bg="lightgray").grid(column=8, row=17, columnspan=3)
-
+Stop = tk.Button(ws, text="停止", command=stop).grid(column=6, row=20, padx=10, pady=5, sticky='swen')
 
 #Exit Button
 quit_buttom = tk.Button(ws, text="離開程式", command=ex)
-quit_buttom.grid(column=11, row=17, padx=10, pady=5)
+quit_buttom.grid(column=12, row=21, padx=40, pady=5)
 
 #-----------------------------------------------------------------------------------------------
 # Progress bar widget
