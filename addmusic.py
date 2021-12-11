@@ -83,8 +83,9 @@ def addmusic(timeL, noteArr):
         if(noteArr[loop]<100): #有音符
             time = howLong(timeL[loop])
             whichkey(noteArr[loop])
-            track.append(mido.Message("note_on", note=noteArr[loop], velocity=100, time=0, channel=1))
-            track.append(mido.Message("note_off", note=noteArr[loop], velocity=100, time=time, channel=1))
+            notef = whichkey(noteArr[loop])
+            track.append(mido.Message("note_on", note=notef, velocity=100, time=0, channel=1))
+            track.append(mido.Message("note_off", note=notef, velocity=100, time=time, channel=1))
     
         elif(noteArr[loop] == 121): #4分休止符
             time = beat
