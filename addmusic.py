@@ -55,6 +55,14 @@ def addmusic(timeL, noteArr):
             time = beat*4
             track.append(mido.Message("note_on", note=60, velocity=0, time=0, channel=1))
             track.append(mido.Message("note_off", note=60, velocity=0, time=time, channel=1))
+        elif (noteArr[loop] == 124): #16分休止符
+            time = int(beat/4)
+            track.append(mido.Message("note_on", note=60, velocity=0, time=0, channel=1))
+            track.append(mido.Message("note_off", note=60, velocity=0, time=time, channel=1))
+        elif (noteArr[loop] == 125): #2分休止符
+            time = beat*2
+            track.append(mido.Message("note_on", note=60, velocity=0, time=0, channel=1))
+            track.append(mido.Message("note_off", note=60, velocity=0, time=time, channel=1))
 
     mid.save("datamusic.mid")
 

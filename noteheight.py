@@ -10,7 +10,7 @@ def _changeKey(Chord):
         key = Chord
 
 def whichnote(num, key):
-    note = 60
+    note = 100
     if(num<19):
         if (num==0):
             note = 55 #G
@@ -61,6 +61,10 @@ def whichnote(num, key):
             note = 122 #8分休止符
         elif (num == 23):
             note = 123 #全休止符
+        elif (num == 26):
+            note = 124 #16分止符
+        elif (num == 27):
+            note = 125 #2分止符
 
     # KEY selection
     if(key == 'C'):
