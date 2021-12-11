@@ -118,7 +118,14 @@ def mainB():
     addmusic._changeBeat(tempo.get())
     addmusic.addmusic(noteL, noteH)
     statusText.set("狀態 : 音樂生成完畢")
+    
 def createMusic():    
+    try:
+       addmusic._changeKey(keysValue.get()[0].upper())
+    except IndexError:
+        addmusic._changeKey('C')
+    # showImage(testText)
+    statusText.set("狀態 : 符號擷取完成")
     statusText.set("狀態 : 音樂生成中...")
     reload()
     addmusic._changeBeat(tempo.get())

@@ -9,7 +9,7 @@ def _changeKey(Chord):
         global key
         key = Chord
 """
-def whichnote(num, key):
+def whichnote(num):
     note = 100
     if(num<19):
         if (num==0):
