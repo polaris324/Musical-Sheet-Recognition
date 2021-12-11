@@ -1,14 +1,14 @@
 import cv2
 import tensorflow
 import numpy as np
-
+"""
 key = 'D' # key of staff
 
 def _changeKey(Chord):
     if Chord != '':
         global key
         key = Chord
-
+"""
 def whichnote(num, key):
     note = 100
     if(num<19):
@@ -67,6 +67,7 @@ def whichnote(num, key):
             note = 125 #2分止符
 
     # KEY selection
+    """
     if(key == 'C'):
         return note
 
@@ -91,7 +92,7 @@ def whichnote(num, key):
     elif(key == 'D'):   #升C大調
         if(note < 100):
             note = note + 1
-
+    """
     return note
 
 def noteheight(mapsymbol):
@@ -113,7 +114,7 @@ def noteheight(mapsymbol):
         x_Test = x_test.astype("float32") / 255.0
         num = np.argmax(model.predict(x_Test), axis=-1)# 音高模型
         #print(num)
-        note = whichnote(num, key)
+        note = whichnote(num)
         notelist.append(int(note))
         """
         if(note<=86):
