@@ -84,12 +84,9 @@ def mainA():
     mapSymbol = 0
     mapSymbol = getSymbol(imgmask, thresh, staffRow, spacing, lastX, mono)
     showThImage("test.jpg")
-    try:
-        noteheight._changeKey(keysValue.get()[0].upper())
-    except IndexError:
-        noteheight._changeKey('C')
-    # showImage(testText)
-    statusText.set("狀態 : 符號擷取完成")
+    
+    statusText.set("狀態 : 符號擷取完畢")
+    reload()
     
     # statusText.set('Status : Running - CNN')
     # reload()
@@ -107,6 +104,7 @@ def mainB():
     
     statusText.set("狀態 : 符號辨識中...")
     reload()
+    
     noteH = noteheight.noteheight(mapSymbol)
     noteL = noteLength(mapSymbol)
     global MadeNoteHeight,MadeNteLength
@@ -269,7 +267,7 @@ def getKeysValue(event):
 # Initial window setting
 ws = tkd.Tk()
 ws.title("Musical-Sheet-Recognition")
-ws.geometry("1450x750")
+ws.geometry("1375x720")
 ws.iconbitmap("Logo_256.ico")
 ws.config(bg="lightgray")
 
