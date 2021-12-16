@@ -24,8 +24,8 @@ mapSymbol = getSymbol(imgmask, thresh, staffRow, spacing, lastX, mono)
 
 # In[Get Note High & Note Long]
 
-noteH = noteheight(mapSymbol)
-noteL = noteLength(mapSymbol)
+# noteH = noteheight(mapSymbol)
+# noteL = noteLength(mapSymbol)
 
 # In[Create Music]
-addmusic(noteL, noteH)
+# addmusic(noteL, noteH)

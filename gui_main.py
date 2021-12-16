@@ -21,7 +21,7 @@ from getSymbol import getSymbol
 import noteheight
 from NotationByNN import noteLength
 import addmusic
-mapSymbol = 0
+mapSymbol = []
 MadeNoteHeight = 0
 MadeNteLength = 0
 def drop(event):
@@ -81,7 +81,7 @@ def mainA():
     # staffRow_spacing, line_spacing = get_rows_dist(staffRow)
     
     global mapSymbol
-    mapSymbol = 0
+    # mapSymbol = []
     mapSymbol = getSymbol(imgmask, thresh, staffRow, spacing, lastX, mono)
     showThImage("test.jpg")
     
@@ -107,7 +107,7 @@ def mainB():
     
     noteH = noteheight.noteheight(mapSymbol)
     noteL = noteLength(mapSymbol)
-    global MadeNoteHeight,MadeNteLength
+    global MadeNoteHeight, MadeNteLength
     MadeNoteHeight = noteH
     MadeNteLength = noteL
     

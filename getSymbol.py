@@ -3,14 +3,12 @@ import os
 import pickle
 import numpy as np
 
-mapNote = [] # 存放音符坐標Array
+
 catchSymbolIndex = 0 #圖片編號定位
-thresh = []
 
 # In[保存此x-axis的列&取出連續計數]
 
-def saveThreshTmp(top, bottom, y):
-    global thresh
+def saveThreshTmp(thresh, top, bottom, y):
     tmp = []
     tail = 0  #tmp pixer 的計數器
     tailCnt = 0
@@ -49,7 +47,7 @@ def saveImg(imgmask, th, yfirst, ylast, xfirst, xlast, i):
 
 # In[add Symbol to list[]]
 
-def saveArray(yfirst, ylast, xfirst, xlast, i):
+def saveArray(mapNote, yfirst, ylast, xfirst, xlast, i):
     global catchSymbolIndex
     axis = [yfirst, ylast, xfirst, xlast]
     
@@ -60,10 +58,10 @@ def saveArray(yfirst, ylast, xfirst, xlast, i):
     return
 
 # In[comp 2 list & return unmatch cnt at listB have the weight]
-def getListDiffCnt(k, maxX, staffRow, top, bottom):
+def getListDiffCnt(k, maxX, staffRow, top, bottom, thresh):
     cnt=0;maxcnt=0
-    listA, tmp = saveThreshTmp(top, bottom, k)
-    listB, tmp = saveThreshTmp(top, bottom, maxX)
+    listA, tmp = saveThreshTmp(thresh, top, bottom, k)
+    listB, tmp = saveThreshTmp(thresh, top, bottom, maxX)
     
     for loop in range(5):
         listA[staffRow[loop] - top] = 255
@@ -82,7 +80,7 @@ def getListDiffCnt(k, maxX, staffRow, top, bottom):
 
 # In[crop Symbol]
 def getSymbol(imgmask, threshMap, staffRow, spacing, lastx, mono):
-    global thresh
+    mapNote = [] # 存放音符坐標Array
     thresh = threshMap
     index = 1
     
@@ -132,7 +130,7 @@ def getSymbol(imgmask, threshMap, staffRow, spacing, lastx, mono):
             tailCnt2 = tailCnt #前一個
             
             # save a thresh tmp
-            tmp, tailCnt = saveThreshTmp(top_y, bottom_y, k) #tailCnt=0可以不用
+            tmp, tailCnt = saveThreshTmp(thresh, top_y, bottom_y, k) #tailCnt=0可以不用
 
             # comp
             # 未抓捕狀態 find first xaxis change(each Symbol)
@@ -165,11 +163,12 @@ def getSymbol(imgmask, threshMap, staffRow, spacing, lastx, mono):
                         hold = k                    # loop 更新x-axis 截取位置
                         while(tailCnt_tmp == tailCnt): # loop 跳過相同竪綫長度
                             hold += 1
-                            tmp, tailCnt_tmp = saveThreshTmp(top_y, bottom_y, hold)
+                            tmp, tailCnt_tmp = saveThreshTmp(thresh, top_y, bottom_y, hold)
                         
                         # 小節綫處理
                         if(tailCnt_tmp < (0.4 * spacing)): # 下一個 x-aixs 沒符號特徵
                             set_endx = k + spacing  # 設定索取x坐標終點
+                            set_topx = k - spacing
                             k = set_endx    # x-aixs 設定為 right-last 定下次搜尋目標位置
                             flag = 0        # Jump 輸出狀態
                         
@@ -177,9 +176,9 @@ def getSymbol(imgmask, threshMap, staffRow, spacing, lastx, mono):
 
                         #分成左杠右杠
                         if( (tailCnt2 != 0 and maxCnt2 != 0)  and
-                            tailCnt2 <= (spacing + 2) and
+                            tailCnt2 <= round(1.4 * spacing) and
                             k - firstImpact_Locx >= spacing and
-                            getListDiffCnt(firstImpact_Locx - 1, maxlocX, staffRow[i], top_y, bottom_y) > round(0.5 * spacing)):  #符杆前面有連續pixel
+                            getListDiffCnt(firstImpact_Locx - 1, maxlocX, staffRow[i], top_y, bottom_y, thresh) > round(0.5 * spacing)):  #符杆前面有連續pixel
                             #只有不超過閒的連續pixel（單音符）
                             
                             set_topx = k - round(1.8 * spacing)
@@ -189,6 +188,7 @@ def getSymbol(imgmask, threshMap, staffRow, spacing, lastx, mono):
                             k = k + spacing
                         
                         else: #/.
+                            # set_topx = k - round(0.6 * spacing)
                             set_topx = k - spacing #[0.8]
                             k = k + round(1.8 * spacing)
                             
@@ -214,7 +214,7 @@ def getSymbol(imgmask, threshMap, staffRow, spacing, lastx, mono):
                     else:                               #遇到附點音符   
                         imgmask = saveImg(imgmask, thresh, y1, y2, x1, k+5, index)
                         'save Array[]'
-                        saveArray(y1, y2, x1, k+5, index)
+                        saveArray(mapNote, y1, y2, x1, k+5, index)
                         
                         maxCnt2 = 0 #211008 重值
                         index = index + 1
@@ -228,7 +228,7 @@ def getSymbol(imgmask, threshMap, staffRow, spacing, lastx, mono):
 
                         imgmask = saveImg(imgmask, thresh, y1, y2, x1, x2, index)
                         'save Array[]'
-                        saveArray(y1, y2, x1, x2, index)
+                        saveArray(mapNote, y1, y2, x1, x2, index)
                         
                         index = index + 1
                     x1,x2,y1,y2 = set_topx, set_endx, top_y, bottom_y   #覆蓋
@@ -242,7 +242,7 @@ def getSymbol(imgmask, threshMap, staffRow, spacing, lastx, mono):
         imgmask = saveImg(imgmask, thresh, y1, y2, x1, x2, index)
         
         'save Array[]'
-        saveArray(y1, y2, x1, x2, index)
+        saveArray(mapNote, y1, y2, x1, x2, index)
         index = index + 1
         
     cv2.imwrite("test.jpg", imgmask)
