@@ -18,12 +18,19 @@ import tkinterdnd2 as tkd # https://pythonguides.com/python-tkinter-drag-and-dro
 from pre_processing import preprocessing, _changeThersholdType
 from get_axis_line import findstaff_spacing
 from getSymbol import getSymbol
-import noteheight
-from NotationByNN import noteLength
+# import noteheight
+# from NotationByNN import noteLength
 import addmusic
-mapSymbol = 0
+mapSymbol = []
 MadeNoteHeight = 0
 MadeNteLength = 0
+
+#
+import tensorflow
+from prediction import cnnPrediction
+modelH = tensorflow.keras.models.load_model("Save_Model_note")
+modelL = tensorflow.keras.models.load_model('Save_Model_NN')
+
 def drop(event):
     var.set(event.data)
 
@@ -81,7 +88,7 @@ def mainA():
     # staffRow_spacing, line_spacing = get_rows_dist(staffRow)
     
     global mapSymbol
-    mapSymbol = 0
+    # mapSymbol = []
     mapSymbol = getSymbol(imgmask, thresh, staffRow, spacing, lastX, mono)
     showThImage("test.jpg")
     
@@ -105,9 +112,10 @@ def mainB():
     statusText.set("狀態 : 符號辨識中...")
     reload()
     
-    noteH = noteheight.noteheight(mapSymbol)
-    noteL = noteLength(mapSymbol)
-    global MadeNoteHeight,MadeNteLength
+    # noteH = noteheight.noteheight(mapSymbol)
+    # noteL = noteLength(mapSymbol)
+    noteH,noteL = cnnPrediction(modelH, modelL, mapSymbol)
+    global MadeNoteHeight, MadeNteLength
     MadeNoteHeight = noteH
     MadeNteLength = noteL
     

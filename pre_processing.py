@@ -11,8 +11,8 @@ import numpy as np
 from skimage.filters import threshold_yen
 
 """Global variable"""
-thresholdSelect = ' Otsu'   # 預設二值化為 (Otsu自適應 \ Customize \ Ken)
-thresholdRet    = 200      # 固定阈值變數
+thresholdSelect = ' Customize'   # 預設二值化為 (Otsu自適應 \ Customize \ Ken)
+thresholdRet    = 162      # 固定阈值變數
 
 def _changeThersholdType(thresholdType, retNum):
     global thresholdSelect
