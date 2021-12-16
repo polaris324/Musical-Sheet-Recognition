@@ -112,14 +112,9 @@ def mainB():
     statusText.set("狀態 : 符號辨識中...")
     reload()
     
-<<<<<<< HEAD
     # noteH = noteheight.noteheight(mapSymbol)
     # noteL = noteLength(mapSymbol)
     noteH,noteL = cnnPrediction(modelH, modelL, mapSymbol)
-=======
-    noteH = noteheight.noteheight(mapSymbol)
-    noteL = noteLength(mapSymbol)
->>>>>>> hotfix
     global MadeNoteHeight, MadeNteLength
     MadeNoteHeight = noteH
     MadeNteLength = noteL
